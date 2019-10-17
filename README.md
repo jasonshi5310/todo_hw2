@@ -1,3 +1,6 @@
+@author Minqi Shi
+@Student ID 111548035
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
