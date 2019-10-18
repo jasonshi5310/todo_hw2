@@ -3,7 +3,6 @@ import testTodoListData from './TestTodoListData.json'
 import HomeScreen from './components/home_screen/HomeScreen'
 import ItemScreen from './components/item_screen/ItemScreen'
 import ListScreen from './components/list_screen/ListScreen'
-import jTPS from './jTPS'
 
 const AppScreen = {
   HOME_SCREEN: "HOME_SCREEN",
@@ -20,7 +19,7 @@ class App extends Component {
     sortByTask:"sort by task increasing",
     sortByDueDate: "sort by due date increasing",
     sortByStatus: "sort by status increasing",
-    currentItemSortCriteria: null
+    currentItemSortCriteria: null,
   }
 
   goHome = () => {
@@ -68,7 +67,7 @@ class App extends Component {
     let completed = document.getElementById("item_completed_checkbox").checked;
     if (description === "") description = "unknown";
     if (assignedTo === '') assignedTo = "unknown";
-    if (dueDate === '') dueDate = "2019-10-21"; 
+    if (dueDate === '') dueDate = null; 
     let currentList = this.state.currentList;       
     let todoItem =  {
         "key": currentList.items.length+1,
@@ -228,24 +227,6 @@ upArrowEvent = (index, event) => {
       }
     }
 
-
-  keyOnEvent = () => {
-
-  }
-    
-  /**
-   * This method is called by jTPS when a transaction is executed.
-   */
-  doTransaction = () => {
-
-  }
-    
-  /**
-   * This method is called by jTPS when a transaction is undone.
-   */
-  undoTransaction = () => {
-      
-  }
 
   render() {
     switch(this.state.currentScreen) {

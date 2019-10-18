@@ -22,7 +22,7 @@ class jTPS {
     // private boolean performingDo = false;
     // private boolean performingUndo = false;
     constructor () {
-        this.transactions = new Array();
+        this.transactions = [];
         this.mostRecentTransaction = -1;
         this.performingDo = false;
         this.performingUndo = false;
@@ -129,7 +129,7 @@ class jTPS {
     undoTransaction() {
         if (this.hasTransactionToUndo()) {
             this.performingUndo = true;
-            var transaction = this.transactions.get(mostRecentTransaction);
+            var transaction = this.transactions.get(this.mostRecentTransaction);
             transaction.undoTransaction();
             this.mostRecentTransaction--;
             this.performingUndo = false;
@@ -180,7 +180,7 @@ class jTPS {
      * can be undone.
      */
     getUndoSize() {
-        return Number(mostRecentTransaction) + 1;
+        return Number(this.mostRecentTransaction) + 1;
     }
     
     /**
@@ -190,7 +190,7 @@ class jTPS {
      * @return true if an undo operation is possible, false otherwise.
      */
     hasTransactionToUndo() {
-        return Number(mostRecentTransaction) >= 0;
+        return Number(this.mostRecentTransaction) >= 0;
     }
     
     /**
@@ -200,7 +200,7 @@ class jTPS {
      * @return true if a redo operation is possible, false otherwise.
      */
     hasTransactionToRedo() {
-        return Number(mostRecentTransaction) < (Number(transactions.size())-1);
+        return Number(this.mostRecentTransaction) < (Number(this.transactions.size())-1);
     }
         
     /**
@@ -214,8 +214,9 @@ class jTPS {
         var text = "--Number of Transactions: " + this.transactions.size() + "\n";
         text += "--Current Index on Stack: " + this.mostRecentTransaction + "\n";
         text += "--Current Transaction Stack:\n";
+        var i;
         for (i = 0; i <= this.mostRecentTransaction; i++) {
-            jT = this.transactions.get(i);
+            let jT = this.transactions.get(i);
             text += "----" + jT.toString() + "\n";
         }
         return text;

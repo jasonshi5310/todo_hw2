@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import ItemScreen from '../item_screen/ItemScreen';
+//import ItemScreen from '../item_screen/ItemScreen';
 
 export class ListItemCard extends Component {
     isComplete = () => {
@@ -20,7 +20,7 @@ export class ListItemCard extends Component {
         let thisId = "list_item_card_upArrow_"+ listItemIndex;
         //this.setupCallback(upArrow, TodoHTML.ONCLICK, TodoCallback.PROCESS_MOVE_ITEM_UP, itemArgs);
         //upArrow.onclick()
-        if (listItemIndex==0) {
+        if (listItemIndex===0) {
             return <button 
             id={thisId} 
             className="list_item_card_button_grey"

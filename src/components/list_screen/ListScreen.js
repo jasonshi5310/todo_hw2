@@ -2,12 +2,19 @@ import React, { Component } from 'react'
 import ListHeading from './ListHeading'
 import ListItemsTable from './ListItemsTable'
 import ListTrash from './ListTrash'
-import PropTypes from 'prop-types';
-import App from '../../App';
+//import PropTypes from 'prop-types';
+//import App from '../../App';
 import DeleteListDialog from './DeleteListDialog';
-import ItemScreen from '../item_screen/ItemScreen';
+//import ItemScreen from '../item_screen/ItemScreen';
+import jTPS from './jTPS';
 
 export class ListScreen extends Component {
+    state = {
+        enable: false,
+        stack:null
+    }
+
+
     getListName() {
         if (this.props.todoList) {
             //let name = this.props.todoList.name;
@@ -44,10 +51,43 @@ export class ListScreen extends Component {
 
     }
 
+    keyUpEvent(event){
+        let keyCode = String.fromCharCode(event.which).toLowerCase();
+        if(event.ctrlKey && keyCode === 'z') {
+            console.log("ctrl && z");
+        }
+        else if(event.ctrlKey && keyCode === 'y') {
+            console.log("ctrl && y");
+        }
+
+    }
+    
+  /**
+   * This method is called by jTPS when a transaction is executed.
+   */
+  doTransaction = () => {
+
+  }
+    
+  /**
+   * This method is called by jTPS when a transaction is undone.
+   */
+  undoTransaction = () => {
+      
+  }
+
+  addListener = () => {
+        if (this.state.enable ===  false) {
+            document.addEventListener("keyup", this.keyUpEvent.bind(this), false);
+            this.setState({enable:true});
+            console.log("success");
+        }
+        
+  }
 
     render() {
         return (
-            <div id="todo_list">
+            <div id="todo_list" onMouseMove={this.addListener}>
                 <ListHeading goHome={this.props.goHome} />
                 <ListTrash ListToDelete/>
                 <DeleteListDialog goHome={this.props.goHome} delList={this.props.delList}/>
