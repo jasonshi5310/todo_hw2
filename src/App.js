@@ -3,17 +3,13 @@ import testTodoListData from './TestTodoListData.json'
 import HomeScreen from './components/home_screen/HomeScreen'
 import ItemScreen from './components/item_screen/ItemScreen'
 import ListScreen from './components/list_screen/ListScreen'
+import jTPS from './jTPS'
 
 const AppScreen = {
   HOME_SCREEN: "HOME_SCREEN",
   LIST_SCREEN: "LIST_SCREEN",
   ITEM_SCREEN: "ITEM_SCREEN"
 }
-
-// const newList = {
-//   NAME = "unknown";
-//   L
-// }
 
 class App extends Component {
   state = {
@@ -183,55 +179,73 @@ upArrowEvent = (index, event) => {
       return this.state.currentItemSortCriteria === testCriteria;
   }
 
-    /**
-     * This method compares two items for the purpose of sorting according to what
-     * is currently set as the current sorting criteria.
-     * 
-     * @param {TodoListItem} item1 First item to compare.
-     * @param {TodoListItem} item2 Second item to compare.
-     */
-    compare = (item1, item2) => {
+  /**
+   * This method compares two items for the purpose of sorting according to what
+   * is currently set as the current sorting criteria.
+   * 
+   * @param {TodoListItem} item1 First item to compare.
+   * @param {TodoListItem} item2 Second item to compare.
+   */
+  compare = (item1, item2) => {
+    // IF IT'S A DECREASING CRITERIA SWAP THE ITEMS
+    if (this.isCurrentItemSortCriteria("sort by task decreasing")
+        || this.isCurrentItemSortCriteria("sort by due date decreasing")
+        || this.isCurrentItemSortCriteria("sort by status decreasing")) {
+        let temp = item1;
+        item1 = item2;
+        item2 = temp;
+    }
+    // SORT BY ITEM DESCRIPTION
+    if (this.isCurrentItemSortCriteria("sort by task decreasing")
+        || this.isCurrentItemSortCriteria("sort by task increasing")) {
+        if (item1.description < item2.description)
+            return -1;
+        else if (item1.description> item2.description)
+            return 1;
+        else
+            return 0;
+    }
 
-      // IF IT'S A DECREASING CRITERIA SWAP THE ITEMS
-      if (this.isCurrentItemSortCriteria("sort by task decreasing")
-          || this.isCurrentItemSortCriteria("sort by due date decreasing")
-          || this.isCurrentItemSortCriteria("sort by status decreasing")) {
-          let temp = item1;
-          item1 = item2;
-          item2 = temp;
-      }
-      // SORT BY ITEM DESCRIPTION
-      if (this.isCurrentItemSortCriteria("sort by task decreasing")
-          || this.isCurrentItemSortCriteria("sort by task increasing")) {
-          if (item1.description < item2.description)
-              return -1;
-          else if (item1.description> item2.description)
-              return 1;
-          else
-              return 0;
-      }
+    // SORT BY DUE DATE
+    if (this.isCurrentItemSortCriteria("sort by due date increasing")
+        || this.isCurrentItemSortCriteria("sort by due date decreasing")) {
+        if (item1.due_date < item2.due_date)
+            return -1;
+        else if(item1.due_date> item2.due_date)
+            return 1;
+        else
+            return 0;
+    }
 
-      // SORT BY DUE DATE
-      if (this.isCurrentItemSortCriteria("sort by due date increasing")
-          || this.isCurrentItemSortCriteria("sort by due date decreasing")) {
-          if (item1.due_date < item2.due_date)
-              return -1;
-          else if(item1.due_date> item2.due_date)
-              return 1;
-          else
-              return 0;
-      }
-
-      // SORT BY COMPLETED
-      else {
-          if (item1.completed < item2.completed)
-              return -1;
-          else if (item1.completed > item2.completed)
-              return 1;
-          else
-              return 0;
+    // SORT BY COMPLETED
+    else {
+        if (item1.completed < item2.completed)
+            return -1;
+        else if (item1.completed > item2.completed)
+            return 1;
+        else
+            return 0;
       }
     }
+
+
+  keyOnEvent = () => {
+
+  }
+    
+  /**
+   * This method is called by jTPS when a transaction is executed.
+   */
+  doTransaction = () => {
+
+  }
+    
+  /**
+   * This method is called by jTPS when a transaction is undone.
+   */
+  undoTransaction = () => {
+      
+  }
 
   render() {
     switch(this.state.currentScreen) {
