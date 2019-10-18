@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import testTodoListData from './TestTodoListData.json'
-import HomeScreen from './components/home_screen/HomeScreen'
-import ItemScreen from './components/item_screen/ItemScreen'
-import ListScreen from './components/list_screen/ListScreen'
+import testTodoListData from './TestTodoListData.json';
+import HomeScreen from './components/home_screen/HomeScreen';
+import ItemScreen from './components/item_screen/ItemScreen';
+import ListScreen from './components/list_screen/ListScreen';
 
 const AppScreen = {
   HOME_SCREEN: "HOME_SCREEN",
