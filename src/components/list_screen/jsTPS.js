@@ -9,7 +9,7 @@
  * @author THE McKilla Gorilla (accept no imposters)
  * @version 2.0
  */
-class jTPS {
+class jsTPS {
     // THE TRANSACTION STACK
     // private ArrayList<jTPS_Transaction> transactions = new ArrayList();
     
@@ -63,15 +63,15 @@ class jTPS {
     addTransaction(transaction) {
         // ARE THERE OLD UNDONE TRANSACTIONS ON THE STACK THAT FIRST
         // NEED TO BE CLEARED OUT, i.e. ARE WE BRANCHING?
-        if ((this.mostRecentTransaction < 0)|| (this.mostRecentTransaction < (Number(this.transactions.size())-1))) {
+        if ((this.mostRecentTransaction < 0)|| (this.mostRecentTransaction < (this.transactions.length-1))) {
             var i;
-            for (i = Number(this.transactions.size())-1; i > this.mostRecentTransaction; i--) {
+            for (i = this.transactions.length-1; i > this.mostRecentTransaction; i--) {
                 this.transactions.remove(i);
             }
         }
 
         // AND NOW ADD THE TRANSACTION
-        this.transactions.add(transaction);
+        this.transactions.push(transaction);
 
         // AND EXECUTE IT
         this.doTransaction();        
@@ -85,7 +85,7 @@ class jTPS {
     doTransaction() {
         if (this.hasTransactionToRedo()) {
             this.performingDo = true;
-            var transaction = this.transactions.get(this.mostRecentTransaction+1);
+            var transaction = this.transactions[this.mostRecentTransaction+1];
             transaction.doTransaction();
             this.mostRecentTransaction++;
             this.performingDo = false;
@@ -101,7 +101,7 @@ class jTPS {
      */
     peekUndo() {
         if (this.hasTransactionToUndo()) {
-            return this.transactions.get(this.mostRecentTransaction);
+            return this.transactions[this.mostRecentTransaction];
         }
         else
             return null;
@@ -116,7 +116,7 @@ class jTPS {
      */    
     peekDo() {
         if (this.hasTransactionToRedo()) {
-            return this.transactions.get(Number(this.mostRecentTransaction)+1);
+            return this.transactions[Number(this.mostRecentTransaction)+1];
         }
         else
             return null;
@@ -129,7 +129,7 @@ class jTPS {
     undoTransaction() {
         if (this.hasTransactionToUndo()) {
             this.performingUndo = true;
-            var transaction = this.transactions.get(this.mostRecentTransaction);
+            var transaction = this.transactions[this.mostRecentTransaction];
             transaction.undoTransaction();
             this.mostRecentTransaction--;
             this.performingUndo = false;
@@ -143,7 +143,7 @@ class jTPS {
      */
     clearAllTransactions() {
         // REMOVE ALL THE TRANSACTIONS
-        this.transactions.clear();
+        this.transactions=[];
         
         // MAKE SURE TO RESET THE LOCATION OF THE
         // TOP OF THE TPS STACK TOO
@@ -158,7 +158,7 @@ class jTPS {
      * @return The number of transactions currently in the transaction stack.
      */
     getSize() {
-        return this.transactions.size();
+        return this.transactions.length;
     }
     
     /**
@@ -200,7 +200,7 @@ class jTPS {
      * @return true if a redo operation is possible, false otherwise.
      */
     hasTransactionToRedo() {
-        return Number(this.mostRecentTransaction) < (Number(this.transactions.size())-1);
+        return Number(this.mostRecentTransaction) < (this.transactions.length-1);
     }
         
     /**
@@ -211,12 +211,12 @@ class jTPS {
      * @return A textual summary of the TPS.
      */
     toString() {
-        var text = "--Number of Transactions: " + this.transactions.size() + "\n";
+        var text = "--Number of Transactions: " + this.transactions.length + "\n";
         text += "--Current Index on Stack: " + this.mostRecentTransaction + "\n";
         text += "--Current Transaction Stack:\n";
         var i;
         for (i = 0; i <= this.mostRecentTransaction; i++) {
-            let jT = this.transactions.get(i);
+            let jT = this.transactions[i];
             text += "----" + jT.toString() + "\n";
         }
         return text;
