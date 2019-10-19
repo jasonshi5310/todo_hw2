@@ -121,6 +121,8 @@ class App extends Component {
   }
 
   submitNewItem = () => {
+    let oldList = JSON.parse(JSON.stringify(this.state.currentList));
+    let newTrans = new editListTransaction(this.state.currentList, oldList);
     let description = document.getElementById("item_description_textfield").value;
     let assignedTo = document.getElementById("item_assigned_to_textfield").value;
     let dueDate = document.getElementById("item_due_date_picker").value;
@@ -144,7 +146,10 @@ class App extends Component {
       item.due_date = dueDate;
       item.completed = completed;
     }
-    this.loadList(this.state.currentList);
+    let newList = JSON.parse(JSON.stringify(this.state.currentList));
+    newTrans.setNewList(newList);
+    this.addTransaction(newTrans);
+    this.refrash(this.state.currentList);
 }
 
 loadItem = (item) => {
