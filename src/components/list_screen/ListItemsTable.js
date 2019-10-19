@@ -39,6 +39,7 @@ export class ListItemsTable extends Component {
                             removeEvent={this.props.removeEvent}
                             downArrowEvent={this.props.downArrowEvent}
                             upArrowEvent={this.props.upArrowEvent}
+                            addTransaction={this.props.addTransaction}
                             />
                     ))
                 }

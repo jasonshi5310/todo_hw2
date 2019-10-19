@@ -9,7 +9,7 @@
  * @author THE McKilla Gorilla (accept no imposters)
  * @version 2.0
  */
-class jsTPS {
+export class jsTPS {
     // THE TRANSACTION STACK
     // private ArrayList<jTPS_Transaction> transactions = new ArrayList();
     
@@ -66,7 +66,7 @@ class jsTPS {
         if ((this.mostRecentTransaction < 0)|| (this.mostRecentTransaction < (this.transactions.length-1))) {
             var i;
             for (i = this.transactions.length-1; i > this.mostRecentTransaction; i--) {
-                this.transactions.remove(i);
+                this.transactions.pop(i);
             }
         }
 
@@ -116,7 +116,7 @@ class jsTPS {
      */    
     peekDo() {
         if (this.hasTransactionToRedo()) {
-            return this.transactions[Number(this.mostRecentTransaction)+1];
+            return this.transactions[this.mostRecentTransaction+1];
         }
         else
             return null;
@@ -222,3 +222,5 @@ class jsTPS {
         return text;
     }
 }
+
+export default jsTPS

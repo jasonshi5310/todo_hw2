@@ -6,13 +6,11 @@ import ListTrash from './ListTrash'
 //import App from '../../App';
 import DeleteListDialog from './DeleteListDialog';
 //import ItemScreen from '../item_screen/ItemScreen';
-import jTPS from './jTPS';
+//import jsTPS from '../../jsTPS';
+import editListTransaction from '../../editListTransaction';
 
 export class ListScreen extends Component {
-    state = {
-        enable: false,
-        stack:null
-    }
+
 
 
     getListName() {
@@ -34,60 +32,40 @@ export class ListScreen extends Component {
     handleNameChange = (event) => {
         //console.log(event.target.value);
         let value = event.target.value;
+        let oldList = JSON.parse(JSON.stringify(this.props.todoList));
+        let newTrans = new editListTransaction(this.props.todoList, oldList);
         if (value !== "")
             this.props.todoList.name = value;
         else 
             this.props.todoList.name = "unnknown";
+        let newList = JSON.parse(JSON.stringify(this.props.todoList));
+        newTrans.setNewList(newList);
+        this.props.addTransaction(newTrans);
+        
 
     }
 
     handleOwnerChange = (event) => {
         //console.log(event.target.value);
         let value = event.target.value;
+        let oldList = JSON.parse(JSON.stringify(this.props.todoList));
+        let newTrans = new editListTransaction(this.props.todoList, oldList);
         if (value !== "")
             this.props.todoList.owner = value;
         else 
             this.props.todoList.owner = "unknown";
-
-    }
-
-    keyUpEvent(event){
-        let keyCode = String.fromCharCode(event.which).toLowerCase();
-        if(event.ctrlKey && keyCode === 'z') {
-            console.log("ctrl && z");
-        }
-        else if(event.ctrlKey && keyCode === 'y') {
-            console.log("ctrl && y");
-        }
-
-    }
-    
-  /**
-   * This method is called by jTPS when a transaction is executed.
-   */
-  doTransaction = () => {
-
-  }
-    
-  /**
-   * This method is called by jTPS when a transaction is undone.
-   */
-  undoTransaction = () => {
-      
-  }
-
-  addListener = () => {
-        if (this.state.enable ===  false) {
-            document.addEventListener("keyup", this.keyUpEvent.bind(this), false);
-            this.setState({enable:true});
-            console.log("success");
-        }
+        let newList = JSON.parse(JSON.stringify(this.props.todoList));
+        newTrans.setNewList(newList);
+        //if (newList.owner.length>Number(oldList.owner.length))
+        this.props.addTransaction(newTrans);
         
-  }
+    }
+
+
 
     render() {
         return (
-            <div id="todo_list" onMouseMove={this.addListener}>
+            <div id="todo_list">
                 <ListHeading goHome={this.props.goHome} />
                 <ListTrash ListToDelete/>
                 <DeleteListDialog goHome={this.props.goHome} delList={this.props.delList}/>
@@ -120,6 +98,7 @@ export class ListScreen extends Component {
                 downArrowEvent={this.props.downArrowEvent}
                 upArrowEvent={this.props.upArrowEvent}
                 sortTasks={this.props.sortTasks}
+                addTransaction={this.addTransaction}
                 />
             </div>
         )

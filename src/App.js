@@ -3,6 +3,8 @@ import testTodoListData from './TestTodoListData.json';
 import HomeScreen from './components/home_screen/HomeScreen';
 import ItemScreen from './components/item_screen/ItemScreen';
 import ListScreen from './components/list_screen/ListScreen';
+import jsTPS from '../src/jsTPS';
+import editListTransaction from '../src/editListTransaction';
 
 const AppScreen = {
   HOME_SCREEN: "HOME_SCREEN",
@@ -20,11 +22,18 @@ class App extends Component {
     sortByDueDate: "sort by due date increasing",
     sortByStatus: "sort by status increasing",
     currentItemSortCriteria: null,
+    tps: new jsTPS(),
+    enable: false
+  }
+
+  addTransaction = (transaction) => {
+    this.state.tps.addTransaction(transaction);
   }
 
   goHome = () => {
     this.setState({currentScreen: AppScreen.HOME_SCREEN});
     this.setState({currentList: null});
+    this.setState({tps: new jsTPS()});
   }
 
   loadList = (todoListToLoad) => {
@@ -32,7 +41,58 @@ class App extends Component {
     this.setState({currentList: todoListToLoad});
     console.log("currentList: " + this.state.currentList);
     console.log("currentScreen: " + this.state.currentScreen);
+    window.addEventListener('keyup', this.keyUpEvent);
   }
+
+  keyUpEvent = (event) => {
+    //let keyCode = String.fromCharCode(event.which).toLowerCase();
+    console.log("before:");
+    console.log(this.state.tps);
+    let current = this.state.tps.peekUndo();
+    if (current !== null &&current.oldList.owner===current.newList.owner&& current.oldList.name===current.newList.name)
+    this.setState({enable:true});
+    if (event.ctrlKey && event.keyCode === 90 && !this.state.enable &&this.state.tps.mostRecentTransaction!==-1)
+    {
+      this.state.tps.mostRecentTransaction -= 1;
+    }
+
+    if(event.ctrlKey && event.keyCode === 90) {
+        console.log("ctrl && z");
+        event.preventDefault();
+        let current = this.state.tps.peekUndo();
+        this.state.tps.undoTransaction();
+        if (current!== null)//&&this.state.tps.mostRecentTransaction==0)
+        {
+          this.setState({currentList:current.oldList});
+        }
+        document.getElementById("list_name_textfield").value = this.state.currentList.name;
+        document.getElementById("list_owner_textfield").value = this.state.currentList.owner;
+    }
+    else if(event.ctrlKey && event.keyCode === 89) {
+        console.log("ctrl && y");
+        event.preventDefault();
+        let current = this.state.tps.peekDo();
+        this.state.tps.doTransaction();
+        if (current!==null)
+        {
+          this.setState({currentList:current.newList});
+        }
+        document.getElementById("list_name_textfield").value = this.state.currentList.name;
+        document.getElementById("list_owner_textfield").value = this.state.currentList.owner;
+    }
+    else
+        this.setState({enable:false});
+    if (event.ctrlKey && event.keyCode === 90 && !this.state.enable)
+    {
+      this.state.tps.transactions.pop();
+      this.setState({enable:true});
+    }
+    if (current!==null&&current.oldList.owner===current.newList.owner&& current.oldList.name===current.newList.name)
+    this.setState({enable:false});
+    console.log("after:")
+    console.log(this.state.tps);
+}
+
 
   loadNewList = () => {
     this.setState({currentScreen:AppScreen.LIST_SCREEN});
@@ -108,35 +168,62 @@ edit = (item) => {
   window.setTimeout(() => (this.loadItem(item)), 100);
 }
 
+
+refrash = (todoListToLoad) => {
+  this.setState({currentScreen: AppScreen.LIST_SCREEN});
+  this.setState({currentList: todoListToLoad});
+  console.log("currentList: " + this.state.currentList);
+  console.log("currentScreen: " + this.state.currentScreen);
+}
 // remove move up and down events
 removeEvent = (cardIndex,event) => {
   event.stopPropagation();
+  let oldList = JSON.parse(JSON.stringify(this.state.currentList));
+  let newTrans = new editListTransaction(this.state.currentList, oldList);
   let listItem = this.state.currentList.items[cardIndex];
   this.setState({currentItem:listItem});
   this.state.currentList.items.splice(cardIndex, 1);
-  this.loadList(this.state.currentList);
+  // let newList = JSON.parse(JSON.stringify(this.props.todoList));
+  // newTrans.setNewList(newList);
+  // this.props.addTransaction(newTrans);
+  let newList = JSON.parse(JSON.stringify(this.state.currentList));
+  newTrans.setNewList(newList);
+  this.addTransaction(newTrans);
+  this.refrash(this.state.currentList);
 }
 
 downArrowEvent = (index, event) => {
   event.stopPropagation();
+  let oldList = JSON.parse(JSON.stringify(this.state.currentList));
+  let newTrans = new editListTransaction(this.state.currentList, oldList);
   let listToEdit = this.state.currentList;
   let currentItem = this.state.currentList.items[index];
   this.setState({currentItem:currentItem});
   let nextItem = listToEdit.items[Number(index)+1];
   listToEdit.items[Number(index)+1] = currentItem;
   listToEdit.items[index] = nextItem;
-  this.loadList(this.state.currentList);
+  let newList = JSON.parse(JSON.stringify(this.state.currentList));
+  newTrans.setNewList(newList);
+  this.addTransaction(newTrans);
+  this.refrash(this.state.currentList);
+ // this.loadList(this.state.currentList);
 }
 
 upArrowEvent = (index, event) => {
   event.stopPropagation();
+  let oldList = JSON.parse(JSON.stringify(this.state.currentList));
+  let newTrans = new editListTransaction(this.state.currentList, oldList);
   let listToEdit = this.state.currentList;
   let currentItem = this.state.currentList.items[index];
   this.setState({currentItem:currentItem});
   let previousItem = listToEdit.items[Number(index)-1];
   listToEdit.items[Number(index)-1] = currentItem;
   listToEdit.items[index] = previousItem;
-  this.loadList(this.state.currentList);
+  let newList = JSON.parse(JSON.stringify(this.state.currentList));
+  newTrans.setNewList(newList);
+  this.addTransaction(newTrans);
+  this.refrash(this.state.currentList);
+  //this.loadList(this.state.currentList);
 }
 
     /**
@@ -145,6 +232,8 @@ upArrowEvent = (index, event) => {
      * @param {ItemSortCriteria} sortingCriteria Sorting criteria to use.
      */
     sortTasks = (sortingCriteria) => {
+      let oldList = JSON.parse(JSON.stringify(this.state.currentList));
+      let newTrans = new editListTransaction(this.state.currentList, oldList);
       if (sortingCriteria==="task") {
         if (this.state.sortByTask=== "sort by task increasing")
         this.setState({sortByTask:"sort by task decreasing"});
@@ -166,7 +255,10 @@ upArrowEvent = (index, event) => {
       this.setState({currentItemSortCriteria:sortingCriteria});
       let listToEdit= this.state.currentList;
       listToEdit.items.sort(this.compare);
-      this.loadList(listToEdit);
+      let newList = JSON.parse(JSON.stringify(this.state.currentList));
+      newTrans.setNewList(newList);
+      this.addTransaction(newTrans);
+      this.refrash(this.state.currentList);
   }
 
   /**
@@ -246,6 +338,7 @@ upArrowEvent = (index, event) => {
           downArrowEvent={this.downArrowEvent}
           upArrowEvent={this.upArrowEvent}
           sortTasks={this.sortTasks}
+          addTransaction={this.addTransaction.bind(this)}
           />;
       case AppScreen.ITEM_SCREEN:
         return <ItemScreen
